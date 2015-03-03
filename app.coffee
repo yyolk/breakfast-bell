@@ -9,6 +9,6 @@ http.createServer (req, res) ->
   res.writeHead 200,
     'Content-Type': 'text/xml'
   res.end twiml.toString()
-.listen PORT, '127.0.0.1'
+.listen PORT
 
 console.log "HTTP server running on #{PORT}"
