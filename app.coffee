@@ -1,9 +1,12 @@
 express = require 'express'
-app = express()
 twilio = require 'twilio'
+bodyParser = require 'body-parser'
+
+app = express()
 
 app.set 'port', (process.env.PORT || 5000)
 # app.use express.static __dirname + '/public'
+app.use bodyParser.json()
 
 app.get '/', (req, res) ->
   twiml = new twilio.TwimlResponse()
