@@ -27,8 +27,9 @@ app.post '/keyin', (req, res) ->
   twiml
   .say 'Success!'
   .say "You entered #{req.body['Digits']}"
-  .play
-    digits: 6666
+  .play '/public/DTMF-6.mp3'
+    loop: 2
+
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
