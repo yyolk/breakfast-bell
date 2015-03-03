@@ -16,7 +16,7 @@ app.get '/', (req, res) ->
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
-app.get '/keyin', (req, res) ->
+app.post '/keyin', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml.say 'Success!'
   twiml.say "You entered #{req['Digits']}"
