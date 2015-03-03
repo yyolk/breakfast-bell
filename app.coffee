@@ -23,9 +23,13 @@ app.get '/', (req, res) ->
 
 app.post '/keyin', (req, res) ->
   twiml = new twilio.TwimlResponse()
-  console.log req
-  twiml.say 'Success!'
-  twiml.say "You entered #{req.body['Digits']}"
+  # console.log req
+  twiml
+  .say 'Success!'
+  .say "You entered #{req.body['Digits']}"
+  .play
+    digits: 6
+    
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
