@@ -25,7 +25,7 @@ app.post '/keyin', (req, res) ->
   twiml = new twilio.TwimlResponse()
   console.log req
   twiml.say 'Success!'
-  twiml.say "You entered #{req.json['Digits']}"
+  twiml.say "You entered #{req.body['Digits']}"
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
