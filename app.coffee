@@ -24,11 +24,15 @@ app.get '/', (req, res) ->
 app.post '/keyin', (req, res) ->
   twiml = new twilio.TwimlResponse()
   # console.log req
-  twiml
-  .say 'Success!'
-  .say "You entered #{req.body['Digits']}"
-  .play '/DTMF-6.mp3',
-    loop: 2
+  if req.body['Digits'] == '2674'
+    twiml
+    .say 'Welcome home YOLK'
+    .play '/DTMF-6.mp3',
+      loop: 2
+  else
+    twiml
+    .say 'Denied!!'
+    .say 'Good bye!'
 
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
