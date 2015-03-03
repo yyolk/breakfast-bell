@@ -27,6 +27,7 @@
   "homepage": "https://github.com/yyolk/breakfast-bell",
   "dependencies": {
     "coffee-script": "^1.9.1",
+    "express": "^4.12.1",
     "twilio": "^1.11.1"
   }
 }
