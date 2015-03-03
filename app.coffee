@@ -29,7 +29,7 @@ app.post '/keyin', (req, res) ->
   .say "You entered #{req.body['Digits']}"
   .play
     digits: 6
-    
+    loop: 5
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
