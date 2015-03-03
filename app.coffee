@@ -28,8 +28,7 @@ app.post '/keyin', (req, res) ->
   .say 'Success!'
   .say "You entered #{req.body['Digits']}"
   .play
-    digits: 6
-    loop: 5
+    digits: 6666
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
