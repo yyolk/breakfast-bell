@@ -3,7 +3,7 @@ twilio = require 'twilio'
 PORT = process.env.port || 5000
 
 http.createServer (req, res) ->
-  twiml = new twili.TwimlResponse()
+  twiml = new twilio.TwimlResponse()
   twiml.say 'Yo, Yolk!'
 
   res.writeHead 200,
