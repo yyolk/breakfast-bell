@@ -26,22 +26,20 @@ app.get '/', (req, res) ->
 
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
-  twiml.say 'Trying YOLK again.'
-  .dial process.env.FORWARD,
-    timeout: 10
-    timeLimit: 5
-    action: '/ring'
+  if req.body['DialCallStatus'] == 'completed'
+    twiml.redirect '/keyin'
+  else
+    twiml.say 'Trying YOLK again.'
+    .dial process.env.FORWARD,
+      timeout: 10
+      timeLimit: 5
+      action: '/ring'
   send_xml res, twiml
 
 app.post '/ring', (req, res) ->
   twiml = new twilio.TwimlResponse()
   if req.body['DialCallStatus'] == 'completed'
-    twiml.say 'Doorbell Yolk!'
-    .gather
-      action: '/keyin'
-      numDigits: 4
-    , () ->
-      @.say 'enter your code'
+    twiml.redirect '/keyin'
   else
     twiml.say 'Sorry buddy, no answer.'
     twiml.say 'Denied!!'
