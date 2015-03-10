@@ -13,11 +13,14 @@ app.use bodyParser.urlencoded
 app.get '/', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml.say 'Yo, Yolk!'
-  twiml.gather
-    action: '/keyin'
-    numDigits: 4
-  , () ->
-    @.say 'enter your code'
+  .dial process.env.FORWARD,
+    timeout: 15
+  .say 'Yo, yolk. Doorbell.'
+  # .gather
+  #   action: '/keyin'
+  #   numDigits: 4
+  # , () ->
+  #   @.say 'enter your code'
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
