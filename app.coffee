@@ -29,7 +29,14 @@ app.get '/', (req, res) ->
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
   if req.body['DialCallStatus'] == 'completed'
-    twiml.redirect '/gather'
+    twiml = new twilio.TwimlResponse()
+    twiml
+    .say 'Doorbell Yolk!'
+    .gather
+      action: '/keyin'
+      numDigits: 4
+    , () ->
+      @.say 'yolk, please enter your code'
   else
     twiml
     .say 'Trying YOLK again.'
