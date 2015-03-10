@@ -28,7 +28,7 @@ app.get '/', (req, res) ->
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
   if req.body['DialCallStatus'] == 'completed'
-    twiml.redirect '/keyin'
+    twiml.redirect '/gather'
   else
     twiml
     .say 'Trying YOLK again.'
@@ -51,7 +51,7 @@ app.post '/gather', (req, res) ->
 app.post '/ring', (req, res) ->
   twiml = new twilio.TwimlResponse()
   if req.body['DialCallStatus'] == 'completed'
-    twiml.redirect '/keyin'
+    twiml.redirect '/gather'
   else
     twiml.say 'Sorry buddy, no answer.'
     twiml.say 'Denied!!'
