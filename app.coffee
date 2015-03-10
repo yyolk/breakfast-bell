@@ -14,13 +14,21 @@ app.get '/', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml.say 'Yo, Yolk!'
   .dial process.env.FORWARD,
-    timeout: 15
+    timeout: 5
     timeLimit: 5
-    action: '/ring'
+    action: '/ringonce'
   .say 'Ringing yolk'
   
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
+
+app.post '/ringonce', (req, res) ->
+  twiml = new twilio.TwimlResponse()
+  twiml.say 'Trying YOLK again.'
+  .dial process.env.FORWARD,
+    timeout: 10
+    timeLimit: 5
+    action: '/ring'
 
 app.post '/ring', (req, res) ->
   twiml = new twilio.TwimlResponse()
