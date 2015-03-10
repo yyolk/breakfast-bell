@@ -42,11 +42,11 @@ app.post '/gather', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml
   .say 'Doorbell Yolk!'
-    .gather
-      action: '/keyin'
-      numDigits: 4
-    , () ->
-      @.say 'yolk, please enter your code'
+  .gather
+    action: '/keyin'
+    numDigits: 4
+  , () ->
+    @.say 'yolk, please enter your code'
   send_xml res, twiml
 
 app.post '/ring', (req, res) ->
