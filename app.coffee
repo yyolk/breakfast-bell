@@ -23,7 +23,7 @@ app.get '/', (req, res) ->
     timeLimit: 5
     action: '/ringonce'
   
-  do send_xml res, twiml
+  send_xml res, twiml
 
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
@@ -32,7 +32,7 @@ app.post '/ringonce', (req, res) ->
     timeout: 10
     timeLimit: 5
     action: '/ring'
-  do send_xml res, twiml
+  send_xml res, twiml
 
 app.post '/ring', (req, res) ->
   twiml = new twilio.TwimlResponse()
