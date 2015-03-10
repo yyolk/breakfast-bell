@@ -15,19 +15,33 @@ app.get '/', (req, res) ->
   twiml.say 'Yo, Yolk!'
   .dial process.env.FORWARD,
     timeout: 15
-  .say 'Yo, yolk. Doorbell.'
-  # .gather
-  #   action: '/keyin'
-  #   numDigits: 4
-  # , () ->
-  #   @.say 'enter your code'
+    timeLimit: 5
+    action: '/ring'
+  .say 'Ringing yolk'
+  
+  res.set 'Content-Type', 'text/xml'
+  res.send new Buffer twiml.toString()
+
+app.post '/ring', (req, res) ->
+  twiml = new twilio.TwimlResponse()
+  if req.body['DialCallStatus'] == 'completed'
+    twiml.say 'Doorbell Yolk!'
+    .gather
+      action: '/keyin'
+      numDigits: 4
+    , () ->
+      @.say 'enter your code'
+  else
+    twiml.say 'Sorry buddy, no answer.'
+    twiml.say 'Denied!!'
+    twiml.hangup
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
 app.post '/keyin', (req, res) ->
   twiml = new twilio.TwimlResponse()
   # console.log req
-  if req.body['Digits'] == '2674'
+  if req.body['Digits'] == process.env.PIN
     twiml
     .say 'Welcome home YOLK'
     .play '/DTMF-6.mp3',
