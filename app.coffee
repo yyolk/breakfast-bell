@@ -47,6 +47,7 @@ app.post '/gather', (req, res) ->
       numDigits: 4
     , () ->
       @.say 'yolk, please enter your code'
+  send_xml res, twiml
 
 app.post '/ring', (req, res) ->
   twiml = new twilio.TwimlResponse()
