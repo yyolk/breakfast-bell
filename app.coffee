@@ -21,7 +21,7 @@ app.get '/', (req, res) ->
   .say 'Ringing yolk'
   .dial process.env.FORWARD,
     timeout: 12
-    timeLimit: 20
+    timeLimit: 10
     action: '/ringonce'
 
   send_xml res, twiml
@@ -29,6 +29,7 @@ app.get '/', (req, res) ->
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
   if req.body['DialCallStatus'] == 'completed'
+    console.log req.body
     twiml.redirect '/gather'
   else
     twiml
