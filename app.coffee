@@ -10,18 +10,18 @@ app.use express.static __dirname + '/public'
 app.use bodyParser.urlencoded
   extended: true
 
-send_xml = (res, twiml) =>
+send_xml = (res, twiml) ->
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
 app.get '/', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml.say 'Yo, Yolk!'
+  .say 'Ringing yolk'
   .dial process.env.FORWARD,
     timeout: 5
     timeLimit: 5
     action: '/ringonce'
-  .say 'Ringing yolk'
   
   do send_xml res, twiml
 
