@@ -29,6 +29,7 @@ app.get '/', (req, res) ->
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
   if req.body['DialCallStatus'] == 'completed'
+    console.log req
     console.log req.body
     twiml.redirect '/gather'
   else
