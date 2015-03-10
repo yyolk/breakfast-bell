@@ -55,6 +55,7 @@ app.post '/keyin', (req, res) ->
     .say 'Welcome home YOLK'
     .play '/DTMF-6.mp3',
       loop: 2
+    .hangup
   else
     twiml
     .say 'Denied!!'
