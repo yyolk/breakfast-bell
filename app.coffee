@@ -20,7 +20,7 @@ app.get '/', (req, res) ->
   .say 'Yo, Yolk!'
   .say 'Ringing yolk'
   .dial process.env.FORWARD,
-    timeout: 5
+    timeout: 12
     timeLimit: 20
     action: '/ringonce'
 
