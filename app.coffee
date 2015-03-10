@@ -20,7 +20,6 @@ app.get '/', (req, res) ->
   .say 'Ringing yolk'
   .dial process.env.FORWARD,
     timeout: 5
-    timeLimit: 5
     action: '/ringonce'
   
   send_xml res, twiml
