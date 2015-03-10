@@ -1,8 +1,8 @@
 {
   "name": "breakfast-bell",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "breakfast house :: breakfast bell",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "node test",
     "start": "node index"
