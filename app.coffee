@@ -22,6 +22,7 @@ app.get '/', (req, res) ->
   .dial process.env.FORWARD,
     timeout: 8
     action: '/ringonce'
+  .redirect '/gather'
   
   send_xml res, twiml
 
