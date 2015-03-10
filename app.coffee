@@ -19,7 +19,7 @@ app.get '/', (req, res) ->
   twiml.say 'Yo, Yolk!'
   .say 'Ringing yolk'
   .dial process.env.FORWARD,
-    timeout: 5
+    timeout: 8
     action: '/ringonce'
   
   send_xml res, twiml
