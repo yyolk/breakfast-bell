@@ -28,8 +28,14 @@ app.get '/', (req, res) ->
 
   send_xml res, twiml
 
+app.post '/hangup', (req, res) ->
+  twiml = new twilio.TwimlResponse()
+  twiml.hangup()
+  senx_xml res, twiml
+
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
+  twiml.redirect '/hangup'
   if req.body['DialCallStatus'] == 'completed'
     console.log req
     console.log req.body
