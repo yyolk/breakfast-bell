@@ -19,7 +19,9 @@ app.get '/', (req, res) ->
   twiml
   .say 'Yo, Yolk!'
   .say 'Ringing yolk'
-  .dial process.env.FORWARD,
+  .dial 
+      url: '/gather', ()->
+        @number process.env.FORWARD,
     timeout: 8
     action: '/ringonce'
   
