@@ -51,7 +51,7 @@ app.post '/gather', (req, res) ->
     action: '/keyin'
     numDigits: 4
   , () ->
-    @.say 'yolk, please enter your code'
+    @say 'yolk, please enter your code'
   send_xml res, twiml
 
 app.post '/ring', (req, res) ->
