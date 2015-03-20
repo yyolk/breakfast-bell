@@ -20,16 +20,19 @@ app.get '/', (req, res) ->
   .say 'Yo, Yolk!'
   .say 'Ringing yolk'
   .dial 
-      url: '/gather', ()->
-        @number process.env.FORWARD,
     timeout: 8
     action: '/ringonce'
-  
+  , ()->
+    @number process.env.FORWARD,
+      url: '/gather'
+
   send_xml res, twiml
 
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
   if req.body['DialCallStatus'] == 'completed'
+    console.log req
+    console.log req.body
     twiml.redirect '/gather'
   else
     twiml
@@ -44,11 +47,11 @@ app.post '/gather', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml
   .say 'Doorbell Yolk!'
-    .gather
-      action: '/keyin'
-      numDigits: 4
-    , () ->
-      @.say 'yolk, please enter your code'
+  .gather
+    action: '/keyin'
+    numDigits: 4
+  , () ->
+    @.say 'yolk, please enter your code'
   send_xml res, twiml
 
 app.post '/ring', (req, res) ->
