@@ -21,6 +21,7 @@ app.get '/', (req, res) ->
   .say 'Ringing yolk'
   .dial 
     timeout: 12
+    action: '/ringonce'
   , ()->
     @number process.env.FORWARD,
       url: '/gather'
