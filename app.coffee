@@ -31,7 +31,7 @@ app.get '/', (req, res) ->
 app.post '/hangup', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml.hangup()
-  senx_xml res, twiml
+  send_xml res, twiml
 
 app.post '/ringonce', (req, res) ->
   twiml = new twilio.TwimlResponse()
