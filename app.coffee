@@ -20,8 +20,7 @@ app.get '/', (req, res) ->
   .say 'Yo, Yolk!'
   .say 'Ringing yolk'
   .dial 
-    timeout: 8
-    action: '/ringonce'
+    timeout: 12
   , ()->
     @number process.env.FORWARD,
       url: '/gather'
@@ -52,11 +51,11 @@ app.post '/ringonce', (req, res) ->
 app.post '/gather', (req, res) ->
   twiml = new twilio.TwimlResponse()
   twiml
-  .say 'Doorbell Yolk!'
   .gather
     action: '/keyin'
     numDigits: 4
   , () ->
+    @say 'Doorbell Yolk!'
     @say 'yolk, please enter your code'
   send_xml res, twiml
 
@@ -67,7 +66,7 @@ app.post '/ring', (req, res) ->
   else
     twiml.say 'Sorry buddy, no answer.'
     twiml.say 'Denied!!'
-    twiml.hangup
+    twiml.hangup()
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
@@ -79,17 +78,18 @@ app.post '/keyin', (req, res) ->
     .say 'Welcome home YOLK'
     .play '/DTMF-6.mp3',
       loop: 2
-    .hangup
+    .hangup()
   else if req.body['Digits'] == process.env.GUESTPIN
     twiml
     .say 'Welcom to the Breakfast House'
     .play '/DTMF-6.mp3',
       loop: 2
-    .hangup
+    .hangup()
   else
     twiml
     .say 'Denied!!'
     .say 'Good bye!'
+    .hangup()
 
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
