@@ -71,6 +71,13 @@ app.post '/ring', (req, res) ->
   res.set 'Content-Type', 'text/xml'
   res.send new Buffer twiml.toString()
 
+app.get '/sorry', (req, res) ->
+  twiml = new twiml.TwimlResponse()
+  twiml.say 'Sorry, no answer.'
+  twiml.say 'Goodbye!'
+  twiml.hangup()
+  send_xml res, twiml
+
 app.post '/keyin', (req, res) ->
   twiml = new twilio.TwimlResponse()
   # console.log req
