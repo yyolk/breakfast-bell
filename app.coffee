@@ -89,7 +89,7 @@ app.post '/keyin', (req, res) ->
     .hangup()
   else if req.body['Digits'] == process.env.GUESTPIN
     twiml
-    .say 'Welcom to the Breakfast House'
+    .say 'Welcome to the Breakfast House'
     .play '/DTMF-6.mp3',
       loop: 2
     .hangup()
