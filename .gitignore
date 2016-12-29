@@ -7,5 +7,6 @@ test/fixtures/underscore
 test/*.js
 examples/beautiful_code/parse.coffee
 *.gem
-/node_modules
+node_modules
 .env
+*.zip
