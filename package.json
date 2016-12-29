@@ -1,15 +1,14 @@
 {
   "name": "breakfast-bell",
-  "version": "0.0.2",
+  "version": "0.2.0",
   "description": "breakfast house :: breakfast bell",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "test": "node test",
-    "start": "node index"
+    "test": "node test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yyolk/breakfast-bell.git"
+    "url": "git+https://github.com/yyolk/breakfast-bell.git"
   },
   "keywords": [
     "breakfast",
@@ -24,15 +23,5 @@
   "bugs": {
     "url": "https://github.com/yyolk/breakfast-bell/issues"
   },
-  "homepage": "https://github.com/yyolk/breakfast-bell",
-  "dependencies": {
-    "body-parser": "^1.12.0",
-    "coffee-script": "^1.9.1",
-    "express": "^4.12.1",
-    "twilio": "^1.11.1"
-  },
-  "engines": {
-    "node": "0.10.x",
-    "npm": "2.7.3"
-  }
+  "homepage": "https://github.com/yyolk/breakfast-bell#readme"
 }
