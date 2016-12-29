@@ -10,3 +10,4 @@ examples/beautiful_code/parse.coffee
 node_modules
 .env
 *.zip
+dist
