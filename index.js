@@ -13,7 +13,7 @@ exports.handler = function(event, context, callback) {
   const accessStart    = moment().tz(scheduleTZ).hours(startHour).minutes(startMinute);
   const accessEnd      = moment().tz(scheduleTZ).hours(endHour).minutes(endMinute);
   const greeting       = process.env.GREETING || `Hello! One moment while I call YOLK!`;
-  const accessGreeting = process.env.SCHEDULE_GREETING || `Hello YOLK!`;
+  const accessGreeting = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
   let body             = '';
   let smsTemplate      = '';
 
