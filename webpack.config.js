@@ -16,7 +16,10 @@ function getPlugins() {
   );
   plugins.push(new
     S3Plugin({
-      include: /.*\.zip/,
+      include: /(.*\.zip|swagger.yaml)/,
+      s3Options: {
+        region: 'us-east-1'
+      },
       s3UploadOptions: {
         Bucket: 'yolks-breakfasthouse-lambda'
       },
@@ -42,7 +45,7 @@ module.exports = {
     libraryTarget: "commonjs2",
     filename: "[name].js"
   },
-  entry: "./index.js",
+  entry: ['babel-polyfill', "./index.js"],
   target: "node",
   externals: [
     "aws-sdk"
@@ -51,14 +54,11 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
         loader: 'babel',
         query: {
           presets: ['es2015'],
-          plugins: [
-            'syntax-flow',
-            'transform-flow-strip-types'
-          ]
+          plugins: []
         }
       },
       {
