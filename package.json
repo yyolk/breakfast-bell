@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "moment-timezone": "^0.5.11",
-    "twiml-builder": "^1.1.0"
+    "twiml-builder": "^1.1.0",
+    "ypp": "^1.0.0"
   }
 }
