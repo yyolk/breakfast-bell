@@ -4,7 +4,7 @@
   "description": "breakfast house :: breakfast bell",
   "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "test": "node try-bell"
   },
   "repository": {
     "type": "git",
@@ -35,8 +35,10 @@
     "webpack-s3-plugin": "^0.9.2"
   },
   "dependencies": {
+    "aws-sdk": "^2.7.20",
     "moment-timezone": "^0.5.11",
-    "twiml-builder": "^1.1.0",
+    "qs": "^6.3.0",
+    "twiml-builder": "yyolk/twiml-builder#es3-build",
     "ypp": "^1.0.0"
   }
 }
