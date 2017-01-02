@@ -45,6 +45,7 @@ Resources:
         #       in Lambda integration URI in the swagger file to region and accountId
         #       you are deploying to
         LambdaFunctionName: !Ref LambdaFunction
+        # LambdaRecordingFunctionName: !Ref LambdaRecordingFunction
 
 
   LambdaFunction:
@@ -55,6 +56,7 @@ Resources:
       Runtime: nodejs4.3
       Environment:
         Variables:
+          TABLE_NAME: !Ref Table
           FORWARD_NUMBER: !Ref ForwardNumber
           CALLER_ID: !Ref CallerIdNumber
           GREETING: !If
@@ -70,6 +72,7 @@ Resources:
             - DoOverrideDefaultAccessGreeting
             - !Ref AutoEntryGreeting
             - !Ref AWS::NoValue
+      Policies: AmazonDynamoDBFullAccess
       Events:
         ProxyApiRoot:
           Type: Api
@@ -83,6 +86,49 @@ Resources:
             RestApiId: !Ref ApiGatewayApi
             Path: /{proxy+}
             Method: ANY
+
+  # LambdaRecordingFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     CodeUri: s3://yolks-breakfasthouse-lambda/breakfast-bell.zip
+  #     Handler: main.recording
+  #     Runtime: nodejs4.3
+  #     Environment:
+  #       Variables:
+  #         TABLE_NAME: !Ref Table
+  #         FORWARD_NUMBER: !Ref ForwardNumber
+  #         CALLER_ID: !Ref CallerIdNumber
+  #         GREETING: !If
+  #           - DoOverrideDefaultGreeting
+  #           - !Ref Greeting
+  #           - !Ref AWS::NoValue
+  #         SCHEDULE_TIME_ZONE: !Ref TimeZone
+  #         SCHEDULE_AUTO_START_HOUR: !Ref AutoEntryStartHour
+  #         SCHEDULE_AUTO_END_HOUR: !Ref AutoEntryEndHour
+  #         SCHEDULE_AUTO_START_MINUTE: !Ref AutoEntryStartMinute
+  #         SCHEDULE_AUTO_END_MINUTE: !Ref AutoEntryEndMinute
+  #         SCHEDULE_GREETING: !If
+  #           - DoOverrideDefaultAccessGreeting
+  #           - !Ref AutoEntryGreeting
+  #           - !Ref AWS::NoValue
+  #     Policies: AmazonDynamoDBFullAccess
+  #     Events:
+  #       ProxyApiRoot:
+  #         Type: Api
+  #         Properties:
+  #           RestApiId: !Ref ApiGatewayApi
+  #           Path: /recording
+  #           Method: ANY
+
+  Table:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
 
 Outputs:
   ApiUrl:
