@@ -1,3 +1,4 @@
+import regeneratorRuntime from "regenerator-runtime";
 import AWS from 'aws-sdk';
 import pp from 'ypp';
 import 'core-js/modules/es6.reflect.own-keys';
