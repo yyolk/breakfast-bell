@@ -57,6 +57,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref Table
+          CONFIG_TABLE_NAME: !Ref ConfigTable
           FORWARD_NUMBER: !Ref ForwardNumber
           CALLER_ID: !Ref CallerIdNumber
           GREETING: !If
@@ -129,6 +130,17 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
+
+  ConfigTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 1
+
 
 Outputs:
   ApiUrl:
