@@ -208,6 +208,8 @@ export async function handler(event, context, callback) {
       // Redirect()
     );
   }
+  //we know what's returning but this is good for debugging
+  console.log('returning', pp(body));
   callback(null, {
     statusCode: '200',
     body,
