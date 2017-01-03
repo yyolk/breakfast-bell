@@ -38,6 +38,7 @@
     "aws-sdk": "^2.7.20",
     "moment-timezone": "^0.5.11",
     "qs": "^6.3.0",
+    "regenerator-runtime": "^0.10.1",
     "twiml-builder": "yyolk/twiml-builder#es3-build",
     "ypp": "^1.0.0"
   }
