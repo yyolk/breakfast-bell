@@ -174,6 +174,11 @@ export function sms(event, context, callback) {
 //   //let config = (await checkConfig()) ? await getConfig() : await setConfig(null);
 // }
 
+export async function handler(event, context, callback) {
+  //check config, if it doesn't exist set it to default (first boot, reset)
+  let config = (await checkConfig()) ? await getConfig() : await setConfig(null);
+  console.log('config is', pp(config));
+  context.appConfig = config;
   console.log('event is', pp(event));
   console.log('context is', pp(context));
   if (event.path === '/recording') {
