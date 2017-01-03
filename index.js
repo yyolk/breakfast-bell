@@ -83,7 +83,10 @@ export function sms(event, context, callback) {
 
 }
 
-export function handler(event, context, callback) {
+// async function init() {
+//   //TODO: move init here
+//   //let config = (await checkConfig()) ? await getConfig() : await setConfig(null);
+// }
 
   console.log('event is', pp(event));
   console.log('context is', pp(context));
