@@ -237,18 +237,22 @@ export function sms(event, context, callback) {
 // }
 
 export async function handler(event, context, callback) {
+  console.log('event is', pp(event));
+  console.log('context is', pp(context));
+
   //check config, if it doesn't exist set it to default (first boot, reset)
   let config = (await checkConfig()) ? await getConfig() : await setConfig(null);
   console.log('config is', pp(config));
   context.appConfig = config;
-  console.log('event is', pp(event));
-  console.log('context is', pp(context));
+
   if (event.path === '/recording') {
     return handleRecording(event, context, callback);
   }
+
   let body        = '';
   let smsTemplate = '';
   let schedule    = await checkSchedule();
+
   if (schedule) {
     let tt      = "hh:mma";
     let nott    = moment().tz(scheduleTZ).format(tt);
