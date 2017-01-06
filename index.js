@@ -1,28 +1,32 @@
-import regeneratorRuntime from "regenerator-runtime";
 import AWS from 'aws-sdk';
+import request from 'request';
+import ical from 'ical/ical';
+import regeneratorRuntime from "regenerator-runtime";
 import pp from 'ypp';
+import qs from 'qs';
 import 'core-js/modules/es6.reflect.own-keys';
 import { Dial, Say, Sms, Play, default as twiml } from 'twiml-builder';
-import qs from 'qs';
 import moment from 'moment-timezone';
+import 'moment-range';
 
-const forwardNumber   = process.env.FORWARD_NUMBER || "0000000000";
-const callerId        = process.env.CALLER_ID || "0000000000";
-const dtmf6URL        = "https://cdn.yolk.cc/DTMF-6.mp3";
-const startHour       = process.env.SCHEDULE_AUTO_START_HOUR || 0;
-const startMinute     = process.env.SCHEDULE_AUTO_START_MINUTE || 0;
-const startSeconds    = 0;
-const endHour         = process.env.SCHEDULE_AUTO_END_HOUR || 0;
-const endMinute       = process.env.SCHEDULE_AUTO_END_MINUTE || 0;
-const endSeconds      = 0;
-const scheduleTZ      = process.env.SCHEDULE_TIME_ZONE || 'America/Chicago';
-const accessStart     = moment().tz(scheduleTZ).hours(startHour).minutes(startMinute).seconds(startSeconds);
-const accessEnd       = moment().tz(scheduleTZ).hours(endHour).minutes(endMinute).seconds(endSeconds);
-const greeting        = process.env.GREETING || `Hello! One moment while I call YOLK!`;
-const accessGreeting  = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
-const dynamo          = new AWS.DynamoDB.DocumentClient();
-const tableName       = process.env.TABLE_NAME || null;
-const configTableName = process.env.CONFIG_TABLE_NAME || null;
+const forwardNumber         = process.env.FORWARD_NUMBER || "0000000000";
+const callerId              = process.env.CALLER_ID || "0000000000";
+const dtmf6URL              = "https://cdn.yolk.cc/DTMF-6.mp3";
+const startHour             = process.env.SCHEDULE_AUTO_START_HOUR || 0;
+const startMinute           = process.env.SCHEDULE_AUTO_START_MINUTE || 0;
+const startSeconds          = 0;
+const endHour               = process.env.SCHEDULE_AUTO_END_HOUR || 0;
+const endMinute             = process.env.SCHEDULE_AUTO_END_MINUTE || 0;
+const endSeconds            = 0;
+const scheduleTZ            = process.env.SCHEDULE_TIME_ZONE || 'America/Chicago';
+const accessStart           = moment().tz(scheduleTZ).hours(startHour).minutes(startMinute).seconds(startSeconds);
+const accessEnd             = moment().tz(scheduleTZ).hours(endHour).minutes(endMinute).seconds(endSeconds);
+const greeting              = process.env.GREETING || `Hello! One moment while I call YOLK!`;
+const accessGreeting        = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
+const dynamo                = new AWS.DynamoDB.DocumentClient();
+const tableName             = process.env.TABLE_NAME || null;
+const configTableName       = process.env.CONFIG_TABLE_NAME || null;
+const doorAccessCalendarURL = process.env.DOOR_ACCESS_CALENDAR_URL || null;
 
 const DEFAULT_CONFIG  = {
   "someSetting": 'someValue',
@@ -108,13 +112,71 @@ function checkConfig() {
   return configCheck();
 }
 
+function checkDoorAccessCalendar() {
+  if(doorAccessCalendarURL === null) {
+    throw(new Error('Trying to check calendar without a URL set!'));
+  }
+  function getCalendar() {
+    return new Promise(function(resolve, reject){
+      request({
+        method: 'GET',
+        url: doorAccessCalendarURL,
+        json: true,
+        headers: {
+          'User-Agent': 'request'
+        }
+      }, function(err, resp, body){
+        if(err){
+          reject(err);
+        } else {
+          resolve(body);
+        }
+      });
+    });
+  }
+  return getCalendar().then((data) => {
+    // console.log('data is', data);
+    // console.log('ical parsed is', pp(ical.parseICS(data)));
+    let ranges = [];
+    let accessAllowed = false;
+    data = ical.parseICS(data);
+    for (var k in data) {
+      if (data.hasOwnProperty(k) && data[k].type == "VEVENT") {
+        let ev = data[k];
+        // console.log('ev is', pp(ev));
+        let range = moment.range(ev.start, ev.end)
+        // console.log('range is', range.toString());
+        if (moment().within(range)) {
+          accessAllowed = {
+            start: range.start,
+            end: range.end,
+            summary: ev.summary,
+            description: ev.description
+          };
+        }
+        ranges.push(range);
+      }
+    }
+    return accessAllowed;
+  });
+}
 
-function checkSchedule() {
+
+async function checkSchedule() {
   //this will be more complex later...
   if (moment().isBetween(accessStart, accessEnd)) {
-    return true;
+    return {
+      start: accessStart,
+      end: accessEnd,
+      summary: 'auto-access',
+      description: 'Daily auto-access override'
+    };
   }
   else {
+    let calendarDoorAcess = await checkDoorAccessCalendar();
+    if (calendarDoorAcess) {
+      return calendarDoorAcess;
+    }
     return false;
   }
 }
@@ -184,15 +246,17 @@ export async function handler(event, context, callback) {
   if (event.path === '/recording') {
     return handleRecording(event, context, callback);
   }
-  let body             = '';
-  let smsTemplate      = '';
-
-  if (checkSchedule()) {
+  let body        = '';
+  let smsTemplate = '';
+  let schedule    = await checkSchedule();
+  if (schedule) {
     let tt      = "hh:mma";
     let nott    = moment().tz(scheduleTZ).format(tt);
-    let sttt    = accessStart.format(tt);
-    let entt    = accessEnd.format(tt);
-    smsTemplate = `Access granted for front door at ${nott}, based on auto-entry with a schedule of ${sttt}-${entt}`;
+    let sttt    = schedule.start.format(tt);
+    let entt    = schedule.end.format(tt);
+    let summary = schedule.summary ? schedule.summary : 'Unknown';
+    smsTemplate = `Access granted for front door at ${nott}, based on "${summary}" with a schedule of ${sttt}-${entt}`;
+
     body = twiml(
       Say({voice: 'man'}, accessGreeting),
       Sms({to: forwardNumber, from: callerId}, smsTemplate),
