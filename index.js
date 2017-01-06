@@ -25,6 +25,7 @@ const greeting              = process.env.GREETING || `Hello! One moment while I
 const accessGreeting        = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
 const dynamo                = new AWS.DynamoDB.DocumentClient();
 const tableName             = process.env.TABLE_NAME || null;
+const ENABLE_DB_CONFIG      = !!process.env.ENABLE_DB_CONFIG;
 const configTableName       = process.env.CONFIG_TABLE_NAME || null;
 const doorAccessCalendarURL = process.env.DOOR_ACCESS_CALENDAR_URL || null;
 
@@ -237,13 +238,15 @@ export function sms(event, context, callback) {
 // }
 
 export async function handler(event, context, callback) {
+  //check config, if it doesn't exist set it to default (first boot, reset)
+  if (ENABLE_DB_CONFIG) {
+    let config = (await checkConfig()) ? await getConfig() : await setConfig(null);
+    console.log('config is', pp(config));
+    context.appConfig = config;
+  }
+
   console.log('event is', pp(event));
   console.log('context is', pp(context));
-
-  //check config, if it doesn't exist set it to default (first boot, reset)
-  let config = (await checkConfig()) ? await getConfig() : await setConfig(null);
-  console.log('config is', pp(config));
-  context.appConfig = config;
 
   if (event.path === '/recording') {
     return handleRecording(event, context, callback);
