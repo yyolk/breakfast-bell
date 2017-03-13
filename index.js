@@ -22,7 +22,6 @@ const scheduleTZ            = process.env.SCHEDULE_TIME_ZONE || 'America/Chicago
 const accessStart           = moment().tz(scheduleTZ).hours(startHour).minutes(startMinute).seconds(startSeconds);
 const accessEnd             = moment().tz(scheduleTZ).hours(endHour).minutes(endMinute).seconds(endSeconds);
 const greeting              = process.env.GREETING || `Hello! One moment while I call YOLK!`;
-const accessGreeting        = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
 const dynamo                = new AWS.DynamoDB.DocumentClient();
 const tableName             = process.env.TABLE_NAME || null;
 const ENABLE_DB_CONFIG      = !!process.env.ENABLE_DB_CONFIG;
@@ -30,6 +29,8 @@ const configTableName       = process.env.CONFIG_TABLE_NAME || null;
 const doorAccessCalendarURL = process.env.DOOR_ACCESS_CALENDAR_URL || null;
 const icalParser            = new ICalParser();
 const ENABLE_CALCACHE       = process.env.ENABLE_CALCACHE || false;
+const DEFAULT_SUMMARY       = 'Unknown';
+let accessGreeting          = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
 
 const DEFAULT_CONFIG  = {
   "someSetting": 'someValue',
@@ -278,8 +279,14 @@ export async function handler(event, context, callback) {
     let nott    = moment.utc().tz(scheduleTZ).format(tt);
     let sttt    = schedule.start.tz(scheduleTZ).format(tt);
     let entt    = schedule.end.tz(scheduleTZ).format(tt);
-    let summary = schedule.summary ? schedule.summary : 'Unknown';
+    let summary = schedule.summary ? schedule.summary : DEFAULT_SUMMARY;
     smsTemplate = `Access granted for front door at ${nott}, based on "${summary}" with a schedule of ${sttt}-${entt}`;
+
+    //when summary === 'Temporary Access' it means I used a workflow.is
+    //for myself or friendsfrom my phone
+    accessGreeting =
+      (summary === DEFAULT_SUMMARY || summary === 'Temporary Access')
+      ? accessGreeting : `Hello, ${summary}.`;
 
     body = twiml(
       Say({voice: 'man'}, accessGreeting),
