@@ -25,6 +25,15 @@ function getEntry() {
 
 function getPlugins() {
   let plugins = [];
+  process.env.UGLIFY_JS === 'true'
+    && process.env.NODE_ENV !== 'production'
+    && plugins.push(new
+      webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false,
+        }
+      })
+    );
 
   if (process.env.NODE_ENV === 'production') {
     plugins.push(new
