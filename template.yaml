@@ -1,0 +1,185 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM template with API defined in an external Swagger file along with Lambda integrations and CORS configurations
+Parameters:
+  ForwardNumber:
+    Type: String
+    Description: Number to forward calls to
+  CallerIdNumber:
+    Type: String
+    Description: Caller ID Number
+  Greeting:
+    Type: String
+    Default: ''
+  TimeZone:
+    Type: String
+    Description: Timezone for schedule
+    Default: America/Chicago
+  AutoEntryStartHour:
+    Type: String
+    Default: 9
+  AutoEntryStartMinute:
+    Type: String
+    Default: 0
+  AutoEntryEndHour:
+    Type: String
+    Default: 19
+  AutoEntryEndMinute:
+    Type: String
+    Default: 0
+  AutoEntryGreeting:
+    Type: String
+    Default: ''
+  AccessCalendarURL:
+    Type: String
+    Default: ''
+  EnableCalCache:
+    Type: String
+    Default: false
+    AllowedValues:
+      - true
+      - false
+  LambdaMemorySize:
+    Type: String
+    Default: 128
+    AllowedValues:
+      - 128
+      - 192
+      - 256
+      - 320
+      - 384
+      - 448
+      - 512
+Conditions:
+  DoOverrideDefaultGreeting: !Not [ !Equals [ !Ref Greeting, '' ] ]
+  DoOverrideDefaultAccessGreeting: !Not [ !Equals [ !Ref AutoEntryGreeting, '' ] ]
+  DoEnableCalCache: !Equals [ !Ref EnableCalCache, true ]
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      DefinitionUri: s3://yolks-breakfasthouse-lambda/swagger.yaml
+      StageName: Prod
+      Variables:
+        # NOTE: Before using this template, replace the <<region>> and <<account>> fields
+        #       in Lambda integration URI in the swagger file to region and accountId
+        #       you are deploying to
+        LambdaFunctionName: !Ref LambdaFunction
+        # LambdaRecordingFunctionName: !Ref LambdaRecordingFunction
+
+
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://yolks-breakfasthouse-lambda/breakfast-bell.zip
+      Handler: main.handler
+      Runtime: nodejs4.3
+      MemorySize: !Ref LambdaMemorySize
+      Description: >-
+        Breakfast Bell v2
+      Timeout: 3
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+          CONFIG_TABLE_NAME: !Ref ConfigTable
+          FORWARD_NUMBER: !Ref ForwardNumber
+          CALLER_ID: !Ref CallerIdNumber
+          GREETING: !If
+            - DoOverrideDefaultGreeting
+            - !Ref Greeting
+            - !Ref AWS::NoValue
+          SCHEDULE_TIME_ZONE: !Ref TimeZone
+          SCHEDULE_AUTO_START_HOUR: !Ref AutoEntryStartHour
+          SCHEDULE_AUTO_END_HOUR: !Ref AutoEntryEndHour
+          SCHEDULE_AUTO_START_MINUTE: !Ref AutoEntryStartMinute
+          SCHEDULE_AUTO_END_MINUTE: !Ref AutoEntryEndMinute
+          SCHEDULE_GREETING: !If
+            - DoOverrideDefaultAccessGreeting
+            - !Ref AutoEntryGreeting
+            - !Ref AWS::NoValue
+          DOOR_ACCESS_CALENDAR_URL: !Ref AccessCalendarURL
+          ENABLE_CALCACHE: !If
+            - DoEnableCalCache
+            - !Ref EnableCalCache
+            - !Ref AWS::NoValue
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /
+            Method: ANY
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /{proxy+}
+            Method: ANY
+
+  # LambdaRecordingFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     CodeUri: s3://yolks-breakfasthouse-lambda/breakfast-bell.zip
+  #     Handler: main.recording
+  #     Runtime: nodejs4.3
+  #     Environment:
+  #       Variables:
+  #         TABLE_NAME: !Ref Table
+  #         FORWARD_NUMBER: !Ref ForwardNumber
+  #         CALLER_ID: !Ref CallerIdNumber
+  #         GREETING: !If
+  #           - DoOverrideDefaultGreeting
+  #           - !Ref Greeting
+  #           - !Ref AWS::NoValue
+  #         SCHEDULE_TIME_ZONE: !Ref TimeZone
+  #         SCHEDULE_AUTO_START_HOUR: !Ref AutoEntryStartHour
+  #         SCHEDULE_AUTO_END_HOUR: !Ref AutoEntryEndHour
+  #         SCHEDULE_AUTO_START_MINUTE: !Ref AutoEntryStartMinute
+  #         SCHEDULE_AUTO_END_MINUTE: !Ref AutoEntryEndMinute
+  #         SCHEDULE_GREETING: !If
+  #           - DoOverrideDefaultAccessGreeting
+  #           - !Ref AutoEntryGreeting
+  #           - !Ref AWS::NoValue
+  #     Policies: AmazonDynamoDBFullAccess
+  #     Events:
+  #       ProxyApiRoot:
+  #         Type: Api
+  #         Properties:
+  #           RestApiId: !Ref ApiGatewayApi
+  #           Path: /recording
+  #           Method: ANY
+
+  Table:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  ConfigTable:
+    # Idea: initialize this with a custom resource instead
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 1
+
+
+Outputs:
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value: !Join
+      - ''
+      - - https://
+        - !Ref ApiGatewayApi
+        - '.execute-api.'
+        - !Ref 'AWS::Region'
+        - '.amazonaws.com/Prod'
