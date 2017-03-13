@@ -157,7 +157,7 @@ function checkDoorAccessCalendar() {
               let range = moment.range(start, end);
               console.log('range is', range.toString());
 
-              if (moment.utc().within(range)) {
+              if (moment.utc().within(range) && summary) {
                 accessAllowed = {
                   start,
                   end,
