@@ -76,6 +76,8 @@ Resources:
       Handler: main.handler
       Runtime: nodejs4.3
       MemorySize: !Ref LambdaMemorySize
+      Description: >-
+        Breakfast Bell v2
       Timeout: 30
       Environment:
         Variables:
