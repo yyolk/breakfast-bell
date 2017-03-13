@@ -19,6 +19,7 @@ const endHour               = process.env.SCHEDULE_AUTO_END_HOUR || 0;
 const endMinute             = process.env.SCHEDULE_AUTO_END_MINUTE || 0;
 const endSeconds            = 0;
 const scheduleTZ            = process.env.SCHEDULE_TIME_ZONE || 'America/Chicago';
+const accessGreeting        = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
 const accessStart           = moment().tz(scheduleTZ).hours(startHour).minutes(startMinute).seconds(startSeconds);
 const accessEnd             = moment().tz(scheduleTZ).hours(endHour).minutes(endMinute).seconds(endSeconds);
 const greeting              = process.env.GREETING || `Hello! One moment while I call YOLK!`;
@@ -30,7 +31,6 @@ const doorAccessCalendarURL = process.env.DOOR_ACCESS_CALENDAR_URL || null;
 const icalParser            = new ICalParser();
 const ENABLE_CALCACHE       = process.env.ENABLE_CALCACHE || false;
 const DEFAULT_SUMMARY       = 'Unknown';
-let accessGreeting          = process.env.SCHEDULE_GREETING || `Hello, YOLK!`;
 
 const DEFAULT_CONFIG  = {
   "someSetting": 'someValue',
@@ -284,12 +284,12 @@ export async function handler(event, context, callback) {
 
     //when summary === 'Temporary Access' it means I used a workflow.is
     //for myself or friendsfrom my phone
-    accessGreeting =
+    let thisAccessGreeting =
       (summary === DEFAULT_SUMMARY || summary === 'Temporary Access')
       ? accessGreeting : `Hello, ${summary}.`;
 
     body = twiml(
-      Say({voice: 'man'}, accessGreeting),
+      Say({voice: 'man'}, thisAccessGreeting),
       Sms({to: forwardNumber, from: callerId}, smsTemplate),
       Play({loop: 0}, dtmf6URL)
     );
