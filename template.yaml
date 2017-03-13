@@ -34,7 +34,7 @@ Parameters:
   AccessCalendarURL:
     Type: String
     Default: ''
-  EnableFileCache:
+  EnableCache:
     Type: String
     Default: false
     AllowedValues:
@@ -43,7 +43,7 @@ Parameters:
 Conditions:
   DoOverrideDefaultGreeting: !Not [ !Equals [ !Ref Greeting, '' ] ]
   DoOverrideDefaultAccessGreeting: !Not [ !Equals [ !Ref AutoEntryGreeting, '' ] ]
-  DoEnableFileCache: !Equals [ !Ref EnableFileCache, true ]
+  DoEnableCache: !Equals [ !Ref EnableFileCache, true ]
 Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
@@ -85,7 +85,7 @@ Resources:
             - !Ref AWS::NoValue
           DOOR_ACCESS_CALENDAR_URL: !Ref AccessCalendarURL
           ENABLE_FILE_CACHE: !If
-            - DoEnableFileCache
+            - DoEnableCache
             - !Ref EnableFileCache
             - !Ref AWS::NoValue
       Policies: AmazonDynamoDBFullAccess
