@@ -46,20 +46,22 @@ module.exports = {
     libraryTarget: "commonjs2",
     filename: "[name].js"
   },
-  entry: ['babel-polyfill', "./index.js"],
+  entry: "./index.js",
+  // entry: getEntry(),
   target: "node",
-  externals: [
-    "aws-sdk"
-  ],
+  externals: ["aws-sdk"],
   module: {
     loaders: [
       {
         test: /\.js$/,
-        // exclude: /node_modules/,
+        exclude: /node_modules/,
         loader: 'babel',
         query: {
           presets: ['es2015'],
-          plugins: []
+          plugins: [
+            'transform-regenerator',
+            'syntax-async-functions'
+          ]
         }
       },
       {
