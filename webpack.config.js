@@ -6,6 +6,23 @@ const webpack = require("webpack");
 const ArchivePlugin = require("webpack-archive-plugin");
 const S3Plugin = require("webpack-s3-plugin");
 
+function getEntry() {
+  return fs
+    .readdirSync(path.join(__dirname, "./lambdas"))
+    .filter(filename => /\.js$/.test(filename))
+    .map(filename => {
+      let entry = {};
+      entry[filename.replace(".js", "")] = path.join(
+        __dirname,
+        "./lambdas/",
+        filename
+      );
+      return entry;
+    })
+    .reduce((finalObject, entry) => Object.assign(finalObject, entry), {})
+}
+
+
 function getPlugins() {
   let plugins = [];
 
