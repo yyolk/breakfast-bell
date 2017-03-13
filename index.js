@@ -29,6 +29,7 @@ const ENABLE_DB_CONFIG      = !!process.env.ENABLE_DB_CONFIG;
 const configTableName       = process.env.CONFIG_TABLE_NAME || null;
 const doorAccessCalendarURL = process.env.DOOR_ACCESS_CALENDAR_URL || null;
 const icalParser            = new ICalParser();
+const ENABLE_CALCACHE       = process.env.ENABLE_CALCACHE || false;
 
 const DEFAULT_CONFIG  = {
   "someSetting": 'someValue',
