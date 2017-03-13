@@ -40,6 +40,17 @@ Parameters:
     AllowedValues:
       - true
       - false
+  LambdaMemorySize:
+    Type: String
+    Default: 128
+    AllowedValues:
+      - 128
+      - 192
+      - 256
+      - 320
+      - 384
+      - 448
+      - 512
 Conditions:
   DoOverrideDefaultGreeting: !Not [ !Equals [ !Ref Greeting, '' ] ]
   DoOverrideDefaultAccessGreeting: !Not [ !Equals [ !Ref AutoEntryGreeting, '' ] ]
@@ -64,6 +75,8 @@ Resources:
       CodeUri: s3://yolks-breakfasthouse-lambda/breakfast-bell.zip
       Handler: main.handler
       Runtime: nodejs4.3
+      MemorySize: !Ref LambdaMemorySize
+      Timeout: 30
       Environment:
         Variables:
           TABLE_NAME: !Ref Table
