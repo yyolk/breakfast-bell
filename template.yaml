@@ -78,7 +78,7 @@ Resources:
       MemorySize: !Ref LambdaMemorySize
       Description: >-
         Breakfast Bell v2
-      Timeout: 30
+      Timeout: 3
       Environment:
         Variables:
           TABLE_NAME: !Ref Table
