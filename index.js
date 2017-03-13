@@ -8,7 +8,7 @@ import moment from 'moment-timezone';
 import 'moment-range';
 import 'core-js/modules/es6.reflect.own-keys';
 import { Dial, Say, Sms, Play, default as twiml } from 'twiml-builder';
-process.env.ENABLE_FILE_CACHE && import fs from 'fs';
+import fs from 'fs';
 
 const forwardNumber         = process.env.FORWARD_NUMBER || "0000000000";
 const callerId              = process.env.CALLER_ID || "0000000000";
