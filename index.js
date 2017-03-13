@@ -8,7 +8,6 @@ import moment from 'moment-timezone';
 import 'moment-range';
 import 'core-js/modules/es6.reflect.own-keys';
 import { Dial, Say, Sms, Play, default as twiml } from 'twiml-builder';
-import fs from 'fs';
 
 const forwardNumber         = process.env.FORWARD_NUMBER || "0000000000";
 const callerId              = process.env.CALLER_ID || "0000000000";
@@ -117,9 +116,9 @@ function checkConfig() {
 
 function checkDoorAccessCalendar() {
   function handleCache(action, body) {
-    let cacheCal = 'cache.ics';
-    action ===  'read' && fs.existsSync(cacheCal) && console.log('\n\n\n\tcal.ics exists!\n\n\n')
-    action === 'write' && body && fs.writeFileSync(cacheCal, body);
+    // let cacheCal = 'cache.ics';
+    // action ===  'read' && fs.existsSync(cacheCal) && console.log('\n\n\n\tcal.ics exists!\n\n\n')
+    // action === 'write' && body && fs.writeFileSync(cacheCal, body);
     return true;
   }
   if(doorAccessCalendarURL === null) {
