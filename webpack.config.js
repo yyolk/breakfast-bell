@@ -26,7 +26,7 @@ function getEntry() {
 function getPlugins() {
   let plugins = [];
   process.env.UGLIFY_JS === 'true'
-    && process.env.NODE_ENV !== 'production'
+    || process.env.NODE_ENV === 'production'
     && plugins.push(new
       webpack.optimize.UglifyJsPlugin({
         compress: {
@@ -36,13 +36,6 @@ function getPlugins() {
     );
 
   if (process.env.NODE_ENV === 'production') {
-    plugins.push(new
-      webpack.optimize.UglifyJsPlugin({
-        compress: {
-          warnings: false,
-        }
-      })
-    );
     plugins.push(new
       ArchivePlugin({
         output: 'breakfast-bell',
