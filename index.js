@@ -1,8 +1,8 @@
-import AWS from 'aws-sdk';
 import regeneratorRuntime from "regenerator-runtime";
+import AWS from 'aws-sdk';
 import pp from 'ypp';
 import request from 'request';
-import ical from 'ical/ical';
+import { ICalParser } from 'cozy-ical';
 import qs from 'qs';
 import moment from 'moment-timezone';
 import 'moment-range';
@@ -28,6 +28,7 @@ const tableName             = process.env.TABLE_NAME || null;
 const ENABLE_DB_CONFIG      = !!process.env.ENABLE_DB_CONFIG;
 const configTableName       = process.env.CONFIG_TABLE_NAME || null;
 const doorAccessCalendarURL = process.env.DOOR_ACCESS_CALENDAR_URL || null;
+const icalParser            = new ICalParser();
 
 const DEFAULT_CONFIG  = {
   "someSetting": 'someValue',
@@ -117,8 +118,8 @@ function checkDoorAccessCalendar() {
   if(doorAccessCalendarURL === null) {
     throw(new Error('Trying to check calendar without a URL set!'));
   }
-  function getCalendar() {
-    return new Promise(function(resolve, reject){
+  function getCalendarAccess() {
+    return new Promise((resolve, reject) => {
       request({
         method: 'GET',
         url: doorAccessCalendarURL,
@@ -126,40 +127,47 @@ function checkDoorAccessCalendar() {
         headers: {
           'User-Agent': 'request'
         }
-      }, function(err, resp, body){
-        if(err){
-          reject(err);
-        } else {
-          resolve(body);
-        }
+      }, (err, resp, body) => {
+        err && reject(err);
+        icalParser.parseString(body, (err, cal) => {
+          err && reject(err);
+          let accessAllowed = false;
+          console.log('length is', cal.subComponents.length);
+
+          cal.subComponents.forEach((subComponent) => {
+            try {
+              let model = subComponent.model;
+              let startDate = model.startDate;
+              let endDate = model.endDate;
+              let summary = model.summary;
+              summary && console.log(startDate, endDate, summary);
+
+              let start = moment.utc(startDate).tz(scheduleTZ).clone().utc();
+              let end = moment.utc(endDate).tz(scheduleTZ).clone().utc();
+              let range = moment.range(start, end);
+              console.log('range is', range.toString());
+
+              if (moment.utc().within(range)) {
+                accessAllowed = {
+                  start,
+                  end,
+                  summary,
+                  description: `${summary}`
+                };
+              }
+            } catch(e) { console.error(e); }
+          });
+          resolve(accessAllowed);
+        });
       });
     });
   }
-  return getCalendar().then((data) => {
-    // console.log('data is', data);
-    // console.log('ical parsed is', pp(ical.parseICS(data)));
-    let ranges = [];
-    let accessAllowed = false;
-    data = ical.parseICS(data);
-    for (var k in data) {
-      if (data.hasOwnProperty(k) && data[k].type == "VEVENT") {
-        let ev = data[k];
-        // console.log('ev is', pp(ev));
-        let range = moment.range(ev.start, ev.end)
-        // console.log('range is', range.toString());
-        if (moment().within(range)) {
-          accessAllowed = {
-            start: range.start,
-            end: range.end,
-            summary: ev.summary,
-            description: ev.description
-          };
-        }
-        ranges.push(range);
-      }
-    }
-    return accessAllowed;
-  });
+  return getCalendarAccess()
+    .then((accessAllowed) => accessAllowed)
+    .catch((err) => {
+      console.log('error during getCalendarAccess!', err);
+      return false;
+    });
 }
 
 
@@ -258,9 +266,9 @@ export async function handler(event, context, callback) {
 
   if (schedule) {
     let tt      = "hh:mma";
-    let nott    = moment().tz(scheduleTZ).format(tt);
-    let sttt    = schedule.start.format(tt);
-    let entt    = schedule.end.format(tt);
+    let nott    = moment.utc().tz(scheduleTZ).format(tt);
+    let sttt    = schedule.start.tz(scheduleTZ).format(tt);
+    let entt    = schedule.end.tz(scheduleTZ).format(tt);
     let summary = schedule.summary ? schedule.summary : 'Unknown';
     smsTemplate = `Access granted for front door at ${nott}, based on "${summary}" with a schedule of ${sttt}-${entt}`;
 
