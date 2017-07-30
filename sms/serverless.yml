@@ -84,7 +84,7 @@ functions:
     events:
       - http:
           path: sms/twiml
-          method: get
+          method: post
           integration: lambda
           response:
             headers:
