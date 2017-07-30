@@ -56,6 +56,7 @@ function getCalendarAccess() {
              let startDate = model.startDate;
              let endDate = model.endDate;
              let summary = model.summary;
+             let description = model.description || summary;
              summary && console.log(startDate, endDate, summary);
              let start = moment.utc(startDate).tz(TZ).clone().utc();
              let end = moment.utc(endDate).tz(TZ).clone().utc();
@@ -66,7 +67,7 @@ function getCalendarAccess() {
                  start,
                  end,
                  summary,
-                 description: `${summary}`
+                 description
                };
              }
            } catch(e) { console.error(e); }
@@ -101,15 +102,21 @@ module.exports.hellotwiml = (event, context, callback) => {
         let nott    = moment.utc().tz(TZ).format(tt);
         let sttt    = accessAllowed.start.tz(TZ).format(tt);
         let entt    = accessAllowed.end.tz(TZ).format(tt);
-        let summary = accessAllowed.summary
+        let summary = accessAllowed.summary;
+        let description =
+          accessAllowed.description
           ? result.summary
           : `!! i dont have a default summary !!`;
-        let smsTemplate = `Access granted for front door at ${nott}, based on "${summary}" with a schedule of ${sttt}-${entt}`;
+        let moreInfo =
+          (description == summary)
+          ? ''
+          : ` --> More info: "${description}"`;
+        let smsTemplate = `Access granted for front door at ${nott}, based on "${summary}" with a schedule of ${sttt}-${entt}.${moreInfo}`;
 
         response = twiml(
           Say(
             SAYOPTS,
-            `i have no greeting`
+            `Hello, ${summary}.`
           ),
           Sms(
             SMSOPTS,
