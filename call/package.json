@@ -1,0 +1,23 @@
+{
+  "name": "breakfast-bell-call",
+  "version": "0.0.1",
+  "description": "breakfast-bell redux /call",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Yølk Chiocchi",
+  "license": "ISC",
+  "dependencies": {
+    "cozy-ical": "^1.1.22",
+    "moment": "^2.18.1",
+    "moment-range": "^3.0.3",
+    "moment-timezone": "^0.5.13",
+    "request": "^2.81.0",
+    "twiml-builder": "^1.1.0",
+    "ypp": "^1.0.0"
+  },
+  "devDependencies": {
+    "serverless-secrets-plugin": "0.0.1"
+  }
+}
