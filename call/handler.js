@@ -111,7 +111,8 @@ module.exports.hellotwiml = (event, context, callback) => {
           (description == summary)
           ? ''
           : ` --> More info: "${description}"`;
-        let smsTemplate = `Access granted for front door at ${nott}, based on "${summary}" with a schedule of ${sttt}-${entt}.${moreInfo}`;
+        let smsTemplate =
+          `Access granted for front door at ${nott}, based on "${summary}" with a schedule of ${sttt}-${entt}.${moreInfo}`;
 
         response = twiml(
           Say(
