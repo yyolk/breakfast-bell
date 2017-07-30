@@ -36,12 +36,13 @@ request({
     parser.parseString(body, (err, cal) => {
       var util = require('util');
       console.log(Object.getOwnPropertyNames(cal));
-      console.log(util.inspect(cal));
+      //console.log(util.inspect(cal.subComponents));
       console.log('length is', cal.subComponents.length);
       for (var i in cal.subComponents) {
         try {
           var entry = cal.subComponents[i];
           var model = entry.model;
+          console.log(model);
           entry.model.summary && console.log(model.startDate, model.endDate, model.summary);
           var start = moment.utc(model.startDate).tz('America/Chicago');
           var end = moment.utc(model.endDate).tz('America/Chicago');
