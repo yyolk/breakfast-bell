@@ -1,0 +1,17 @@
+{
+  "name": "sms",
+  "version": "0.0.1",
+  "description": "breakfast bell :: sms",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Yølk Chiocchi <joe@yolk.cc>",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-secrets-plugin": "0.0.1"
+  },
+  "dependencies": {
+    "twiml-builder": "^1.1.0"
+  }
+}
