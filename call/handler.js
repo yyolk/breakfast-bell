@@ -118,7 +118,7 @@ module.exports.hellotwiml = (event, context, callback) => {
         response = twiml(
           Say(
             SAYOPTS,
-            `Hello, ${summary}.`
+            `Hello, "${summary}".`
           ),
           Sms(
             SMSOPTS,
