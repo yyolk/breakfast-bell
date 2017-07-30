@@ -57,12 +57,13 @@ function getCalendarAccess() {
              let endDate = model.endDate;
              let summary = model.summary;
              let description = model.description || summary;
-             summary && console.log(startDate, endDate, summary);
+             //summary && console.log(startDate, endDate, summary);
              let start = moment.utc(startDate).tz(TZ).clone().utc();
              let end = moment.utc(endDate).tz(TZ).clone().utc();
              let range = moment.range(start, end);
-             console.log('range is', range.toString());
+             //console.log('range is', range.toString());
              if (moment.utc().within(range) && summary) {
+               console.log('Access Granted!\n', pp( { startDate, endDate, summary } ));
                accessAllowed = {
                  start,
                  end,
@@ -70,7 +71,7 @@ function getCalendarAccess() {
                  description
                };
              }
-           } catch(e) { console.error(e); }
+           } catch(e) { console.error('error on checkAccessCalendar. with error:', e); }
          });
          resolve(accessAllowed);
       });
