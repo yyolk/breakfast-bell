@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.helloxml = (event, context, callback) => {
+module.exports.hellotwiml = (event, context, callback) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({

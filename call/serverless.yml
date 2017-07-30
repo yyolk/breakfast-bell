@@ -74,8 +74,8 @@ functions:
   #      - http:
   #          path: call
   #          method: any
-  helloxml:
-    handler: handler.helloxml
+  hellotwiml:
+    handler: handler.hellotwiml
     environment:
       PHONE_NUMBER: ${self:custom.secrets.PHONE_NUMBER}
       CALLER_ID: ${self:custom.secrets.CALLER_ID}
