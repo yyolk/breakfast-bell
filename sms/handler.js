@@ -1,16 +1,36 @@
 'use strict';
 
-module.exports.hellotwiml = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+const { Message, default: twiml } = require('twiml-builder');
+const forwardNumber         = process.env.PHONE_NUMBER || "0000000000";
+const callerId              = process.env.CALLER_ID || "0000000000";
+const TZ                    = process.env.TIMEZONE || "UTC";
+const SMSOPTS = {
+  to: forwardNumber,
+  from: callerId
+};
 
+function defaultResponse() {
+  return twiml(
+    Message(
+      SMSOPTS,
+      "Not implemented yet"
+    )
+  );
+}
+
+module.exports.hellotwiml = (event, context, callback) => {
+
+  //TODO: use this block so i can catch all errors and still give the default
+  //response
+  //try {
+  //  const response = defaultResponse();
+  //  callback(null, response);
+  //} catch(e) {
+  //  console.log('errored with error:', e);
+  //  callback(null, defaultResponse());
+  //}
+
+  const response = defaultResponse();
   callback(null, response);
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 };
