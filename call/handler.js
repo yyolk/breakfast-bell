@@ -63,7 +63,7 @@ function getCalendarAccess() {
              let end = moment.utc(endDate).tz(TZ).clone().utc();
              let range = moment.range(start, end);
              //console.log('range is', range.toString());
-             if (moment.utc().within(range) && summary) {
+             if (summary && moment.utc().within(range) ) {
                accessAllowed = {
                  uid,
                  start,
