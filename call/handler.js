@@ -55,6 +55,7 @@ function getCalendarAccess() {
              let model = subComponent.model;
              let startDate = model.startDate;
              let endDate = model.endDate;
+             let uid = model.uid;
              let summary = model.summary;
              let description = model.description || summary;
              //summary && console.log(startDate, endDate, summary);
@@ -65,6 +66,7 @@ function getCalendarAccess() {
              if (moment.utc().within(range) && summary) {
                console.log('Access Granted!\n', pp( { startDate, endDate, summary } ));
                accessAllowed = {
+                 uid,
                  start,
                  end,
                  summary,
