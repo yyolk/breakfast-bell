@@ -85,7 +85,7 @@ function defaultResponse() {
   return twiml(
      Say(
        SAYOPTS,
-       "Sup, calling YOLK."
+       `Sup, calling "YOLK".`
      ),
      Dial(
        DIALOPTS,
