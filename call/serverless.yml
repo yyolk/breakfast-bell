@@ -83,7 +83,7 @@ functions:
       DOOR_ACCESS_CALENDAR_URL: ${self:custom.secrets.DOOR_ACCESS_CALENDAR_URL}
     events:
       - http:
-          path: call/twiml
+          path: ${self:service}/twiml
           method: get
           integration: lambda
           response:

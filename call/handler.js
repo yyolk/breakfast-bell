@@ -15,7 +15,7 @@ const callerId              = process.env.CALLER_ID || "0000000000";
 const TZ                    = process.env.TIMEZONE || "UTC";
 const DIALOPTS = {
   callerId,
-  timeout: 10
+  timeout: 15
 };
 //const DIALOPTS = {
 //  callerId,
