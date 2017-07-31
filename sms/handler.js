@@ -1,6 +1,7 @@
 'use strict';
 
-const { Message, default: twiml } = require('twiml-builder');
+//const { Message, default: twiml } = require('twiml-builder');
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
 const pp = require('ypp');
 const forwardNumber         = process.env.PHONE_NUMBER || "0000000000";
 const callerId              = process.env.CALLER_ID || "0000000000";
@@ -10,18 +11,21 @@ const SMSOPTS = {
   from: callerId
 };
 
-function defaultResponse(body) {
-  return twiml(
-    Message(
-      SMSOPTS,
-      "Not implemented yet"+`
-      you sent: "${body}"`
-    )
-  );
+function defaultResponse(response, body) {
+  return response.message(SMSOPTS, "Not implemented yet"+`
+      you sent: "${body}"`);
+  //return twiml(
+  //  Message(
+  //    SMSOPTS,
+  //    "Not implemented yet"+`
+  //    you sent: "${body}"`
+  //  )
+  //);
 }
 
 module.exports.hellotwiml = (event, context, callback) => {
 
+  const response = new MessagingResponse();
   //event example:
   //
   //event =
@@ -59,7 +63,12 @@ module.exports.hellotwiml = (event, context, callback) => {
   //}
 
   console.log('the event i got was', pp(event));
-  const response = defaultResponse(event.body.Body);
-  callback(null, response);
+  //const response = defaultResponse(event.body.Body);
+
+  response.message("Not implemented yet"+`
+      you sent: "${event.body.Body}"`);
+
+  //response = defaultResponse(response, event.body.Body);
+  callback(null, response.toString());
 
 };

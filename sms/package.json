@@ -12,6 +12,7 @@
     "serverless-secrets-plugin": "0.0.1"
   },
   "dependencies": {
+    "twilio": "^3.6.1",
     "twiml-builder": "^1.1.0",
     "ypp": "^1.0.0"
   }
