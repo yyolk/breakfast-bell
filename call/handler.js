@@ -64,7 +64,6 @@ function getCalendarAccess() {
              let range = moment.range(start, end);
              //console.log('range is', range.toString());
              if (moment.utc().within(range) && summary) {
-               console.log('Access Granted!\n', pp( { startDate, endDate, summary } ));
                accessAllowed = {
                  uid,
                  start,
@@ -72,6 +71,7 @@ function getCalendarAccess() {
                  summary,
                  description
                };
+               console.log('Access Granted!\n', pp(accessAllowed));
              }
            } catch(e) { console.error('error on checkAccessCalendar. with error:', e); }
          });
